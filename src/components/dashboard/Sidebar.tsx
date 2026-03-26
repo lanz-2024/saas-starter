@@ -2,17 +2,18 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import type { Route } from 'next';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, FolderKanban, Users, Settings, X, Menu } from 'lucide-react';
 
-const navItems = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Projects', href: '/dashboard/projects', icon: FolderKanban },
-  { label: 'Team', href: '/dashboard/team', icon: Users },
-  { label: 'Settings', href: '/dashboard/settings', icon: Settings },
+const navItems: { label: string; href: Route; icon: React.ElementType }[] = [
+  { label: 'Dashboard', href: '/dashboard' as Route, icon: LayoutDashboard },
+  { label: 'Projects', href: '/dashboard/projects' as Route, icon: FolderKanban },
+  { label: 'Team', href: '/dashboard/team' as Route, icon: Users },
+  { label: 'Settings', href: '/dashboard/settings' as Route, icon: Settings },
 ];
 
-function NavLink({ href, label, icon: Icon }: { href: string; label: string; icon: React.ElementType }) {
+function NavLink({ href, label, icon: Icon }: { href: Route; label: string; icon: React.ElementType }) {
   const pathname = usePathname();
   const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
 

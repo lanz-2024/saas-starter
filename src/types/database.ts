@@ -66,6 +66,7 @@ export interface AuditLog {
 }
 
 // Supabase Database type for typed client
+// Matches the format required by @supabase/supabase-js 2.100+ (PostgREST v12)
 export interface Database {
   public: {
     Tables: {
@@ -73,30 +74,47 @@ export interface Database {
         Row: Organization;
         Insert: Omit<Organization, 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Omit<Organization, 'id' | 'created_at'>>;
+        Relationships: [];
       };
       org_members: {
         Row: OrgMember;
         Insert: Omit<OrgMember, 'id' | 'joined_at'>;
         Update: Partial<Omit<OrgMember, 'id' | 'joined_at'>>;
+        Relationships: [];
       };
       projects: {
         Row: Project;
         Insert: Omit<Project, 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Omit<Project, 'id' | 'created_at'>>;
+        Relationships: [];
       };
       subscriptions: {
         Row: Subscription;
         Insert: Omit<Subscription, 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Omit<Subscription, 'id' | 'created_at'>>;
+        Relationships: [];
       };
       audit_log: {
         Row: AuditLog;
         Insert: Omit<AuditLog, 'id' | 'created_at'>;
         Update: never;
+        Relationships: [];
       };
+    };
+    Views: {
+      [_ in never]: never;
     };
     Enums: {
       org_role: OrgRole;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
+    Functions: {
+      check_project_limit: {
+        Args: { p_org_id: string };
+        Returns: boolean;
+      };
     };
   };
 }

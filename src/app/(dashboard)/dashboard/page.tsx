@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createServerClient } from '@supabase/ssr';
+import type { CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { FolderKanban, Users, CreditCard, Plus } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -15,7 +16,7 @@ export default async function DashboardPage() {
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cs) =>
+        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) =>
           cs.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
       },
     },
@@ -35,7 +36,7 @@ export default async function DashboardPage() {
     .limit(1)
     .single();
 
-  const org = membership?.organizations as { id: string; name: string; plan: string } | null;
+  const org = membership?.organizations as unknown as { id: string; name: string; plan: string } | null;
 
   const { count: projectCount } = await supabase
     .from('projects')
@@ -55,9 +56,9 @@ export default async function DashboardPage() {
     .limit(5);
 
   const stats = [
-    { label: 'Projects', value: projectCount ?? 0, icon: FolderKanban, href: '/dashboard/projects' },
-    { label: 'Team members', value: memberCount ?? 0, icon: Users, href: '/dashboard/team' },
-    { label: 'Current plan', value: org?.plan ?? 'free', icon: CreditCard, href: '/dashboard/settings' },
+    { label: 'Projects', value: projectCount ?? 0, icon: FolderKanban, href: '/dashboard/projects' as import('next').Route },
+    { label: 'Team members', value: memberCount ?? 0, icon: Users, href: '/dashboard/team' as import('next').Route },
+    { label: 'Current plan', value: org?.plan ?? 'free', icon: CreditCard, href: '/dashboard/settings' as import('next').Route },
   ];
 
   return (

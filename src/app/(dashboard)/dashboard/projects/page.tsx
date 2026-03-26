@@ -1,16 +1,17 @@
 'use client';
 
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Plus, FolderKanban } from 'lucide-react';
 import { trpc } from '@/lib/trpc/client';
 import { ProjectCard } from '@/components/dashboard/ProjectCard';
+import type { Project } from '@/types/database';
 
 // Demo org ID — in production this comes from the user's active org context
 const DEMO_ORG_ID = '00000000-0000-0000-0000-000000000001';
 
 function ProjectsGrid({ orgId }: { orgId: string }) {
-  const { data: projects, isLoading, error } = trpc.projects.list.useQuery({ orgId });
+  const { data: projectsData, isLoading, error } = trpc.projects.list.useQuery({ orgId });
+  const projects = projectsData as Project[] | undefined;
 
   if (isLoading) {
     return (

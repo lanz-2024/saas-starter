@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { createServerClient } from '@supabase/ssr';
+import type { CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { Sidebar } from '@/components/dashboard/Sidebar';
 import { signOut } from '@/actions/auth';
@@ -12,7 +13,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cs) =>
+        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) =>
           cs.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
       },
     },

@@ -1,6 +1,11 @@
 import type Stripe from 'stripe';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createAdminClient as _createAdminClient } from '@/lib/supabase/admin';
 import { getPlanByPriceId } from './plans';
+
+// Cast to untyped client — Supabase 2.100 type inference for upsert/update
+// requires generated types from CLI; this module uses raw supabase-js for stripe webhooks
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const createAdminClient = () => _createAdminClient() as unknown as ReturnType<typeof import('@supabase/supabase-js').createClient<any>>;
 
 type WebhookHandlerResult = { success: true } | { success: false; error: string };
 

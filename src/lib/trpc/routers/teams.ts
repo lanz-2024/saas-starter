@@ -1,7 +1,8 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { protectedProcedure, router } from '../trpc';
-import type { OrgRole } from '@/types/database';
+import type { TRPCContext } from '../context';
+import type { OrgRole, OrgMember } from '@/types/database';
 
 const orgIdSchema = z.object({ orgId: z.string().uuid() });
 
@@ -23,7 +24,7 @@ const updateRoleSchema = z.object({
 });
 
 async function assertAdminOrOwner(
-  supabase: Parameters<typeof protectedProcedure._def.resolver>[0]['ctx']['supabase'],
+  supabase: TRPCContext['supabase'],
   userId: string,
   orgId: string,
 ): Promise<OrgRole> {
@@ -46,7 +47,7 @@ async function assertAdminOrOwner(
 }
 
 export const teamsRouter = router({
-  listMembers: protectedProcedure.input(orgIdSchema).query(async ({ ctx, input }) => {
+  listMembers: protectedProcedure.input(orgIdSchema).query(async ({ ctx, input }): Promise<Pick<OrgMember, 'id' | 'user_id' | 'role' | 'invited_by' | 'joined_at'>[]> => {
     const { data: membership, error: memberError } = await ctx.supabase
       .from('org_members')
       .select('role')
@@ -68,7 +69,7 @@ export const teamsRouter = router({
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message });
     }
 
-    return data ?? [];
+    return (data ?? []) as Pick<OrgMember, 'id' | 'user_id' | 'role' | 'invited_by' | 'joined_at'>[];
   }),
 
   invite: protectedProcedure.input(inviteSchema).mutation(async ({ ctx, input }) => {

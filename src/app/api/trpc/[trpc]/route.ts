@@ -8,15 +8,12 @@ const handler = (req: Request) =>
     req,
     router: appRouter,
     createContext: createTRPCContext,
-    onError:
-      process.env.NODE_ENV !== 'production'
-        ? ({ path, error }) => {
-            if (process.env.NODE_ENV !== 'production') {
-              // eslint-disable-next-line no-console
-              console.debug(`tRPC error on ${path ?? '<no-path>'}:`, error);
-            }
-          }
-        : undefined,
+    onError: ({ path, error }) => {
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.debug(`tRPC error on ${path ?? '<no-path>'}:`, error);
+      }
+    },
   });
 
 export { handler as GET, handler as POST };

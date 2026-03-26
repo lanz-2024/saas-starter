@@ -1,6 +1,8 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { protectedProcedure, router } from '../trpc';
+import type { TRPCContext } from '../context';
+import type { Project } from '@/types/database';
 
 const createProjectSchema = z.object({
   orgId: z.string().uuid(),
@@ -20,7 +22,7 @@ const projectIdSchema = z.object({ id: z.string().uuid() });
 const listProjectsSchema = z.object({ orgId: z.string().uuid() });
 
 async function assertOrgMembership(
-  supabase: Parameters<typeof protectedProcedure._def.resolver>[0]['ctx']['supabase'],
+  supabase: TRPCContext['supabase'],
   userId: string,
   orgId: string,
 ) {
@@ -42,7 +44,7 @@ async function assertOrgMembership(
 }
 
 export const projectsRouter = router({
-  list: protectedProcedure.input(listProjectsSchema).query(async ({ ctx, input }) => {
+  list: protectedProcedure.input(listProjectsSchema).query(async ({ ctx, input }): Promise<Project[]> => {
     await assertOrgMembership(ctx.supabase, ctx.user.id, input.orgId);
 
     const { data, error } = await ctx.supabase
@@ -55,7 +57,7 @@ export const projectsRouter = router({
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message });
     }
 
-    return data ?? [];
+    return (data ?? []) as Project[];
   }),
 
   getById: protectedProcedure.input(projectIdSchema).query(async ({ ctx, input }) => {

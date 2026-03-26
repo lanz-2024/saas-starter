@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createBrowserClient } from '@supabase/ssr';
-import type { Metadata } from 'next';
+import type { Route } from 'next';
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirectTo') ?? '/dashboard';
@@ -32,7 +32,7 @@ export default function SignInPage() {
         setError(signInError.message);
         return;
       }
-      router.push(redirectTo);
+      router.push(redirectTo as Route);
       router.refresh();
     } finally {
       setLoading(false);
@@ -168,5 +168,13 @@ export default function SignInPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense>
+      <SignInForm />
+    </Suspense>
   );
 }

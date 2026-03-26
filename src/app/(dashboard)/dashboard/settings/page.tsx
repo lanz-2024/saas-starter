@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { createServerClient } from '@supabase/ssr';
+import type { CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { CreditCard, User } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -21,7 +22,7 @@ export default async function SettingsPage() {
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cs) =>
+        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) =>
           cs.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
       },
     },
@@ -40,7 +41,7 @@ export default async function SettingsPage() {
     .limit(1)
     .single();
 
-  const org = membership?.organizations as { plan: string; name: string } | null;
+  const org = membership?.organizations as unknown as { plan: string; name: string } | null;
   const plan = planLabels[org?.plan ?? 'free'] ?? planLabels['free']!;
   const displayName = user.user_metadata?.['full_name'] as string | undefined;
 

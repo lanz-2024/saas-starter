@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation';
 import { createServerClient } from '@supabase/ssr';
+import type { CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
 
@@ -21,7 +22,7 @@ export async function createProject(formData: FormData) {
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cs) =>
+        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) =>
           cs.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
       },
     },
@@ -70,7 +71,7 @@ export async function deleteProject(id: string) {
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cs) =>
+        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) =>
           cs.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
       },
     },

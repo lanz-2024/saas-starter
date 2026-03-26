@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createServerClient } from '@supabase/ssr';
+import type { CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { ArrowLeft, Calendar, Clock, User } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -30,7 +31,7 @@ export default async function ProjectDetailPage({ params }: Props) {
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cs) =>
+        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) =>
           cs.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
       },
     },

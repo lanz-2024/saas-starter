@@ -1,11 +1,9 @@
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
 import type { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
-import type { Database } from '@/types/database';
-import type { SupabaseClient } from '@supabase/supabase-js';
 
 export interface TRPCContext {
-  supabase: SupabaseClient<Database>;
+  supabase: Awaited<ReturnType<typeof createClient>>;
   user: User | null;
 }
 
