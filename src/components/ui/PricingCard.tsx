@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { Check } from 'lucide-react';
+import Link from 'next/link';
 
 interface PricingCardProps {
   name: string;
@@ -23,9 +23,7 @@ export function PricingCard({
   return (
     <div
       className={`relative flex flex-col rounded-2xl p-8 shadow-sm ${
-        isRecommended
-          ? 'border-2 border-indigo-600 bg-white'
-          : 'border border-gray-200 bg-white'
+        isRecommended ? 'border-2 border-indigo-600 bg-white' : 'border border-gray-200 bg-white'
       }`}
     >
       {isRecommended && (

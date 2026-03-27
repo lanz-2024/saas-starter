@@ -1,4 +1,4 @@
-import { initTRPC, TRPCError } from '@trpc/server';
+import { TRPCError, initTRPC } from '@trpc/server';
 import { ZodError } from 'zod';
 import type { TRPCContext } from './context';
 

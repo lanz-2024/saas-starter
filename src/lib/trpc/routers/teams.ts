@@ -1,8 +1,8 @@
+import type { OrgMember, OrgRole } from '@/types/database';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { protectedProcedure, router } from '../trpc';
 import type { TRPCContext } from '../context';
-import type { OrgRole, OrgMember } from '@/types/database';
+import { protectedProcedure, router } from '../trpc';
 
 const orgIdSchema = z.object({ orgId: z.string().uuid() });
 
@@ -36,41 +36,57 @@ async function assertAdminOrOwner(
     .single();
 
   if (error || !data) {
-    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not a member of this organization.' });
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'You are not a member of this organization.',
+    });
   }
 
   if (data.role !== 'owner' && data.role !== 'admin') {
-    throw new TRPCError({ code: 'FORBIDDEN', message: 'Only admins and owners can perform this action.' });
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'Only admins and owners can perform this action.',
+    });
   }
 
   return data.role;
 }
 
 export const teamsRouter = router({
-  listMembers: protectedProcedure.input(orgIdSchema).query(async ({ ctx, input }): Promise<Pick<OrgMember, 'id' | 'user_id' | 'role' | 'invited_by' | 'joined_at'>[]> => {
-    const { data: membership, error: memberError } = await ctx.supabase
-      .from('org_members')
-      .select('role')
-      .eq('org_id', input.orgId)
-      .eq('user_id', ctx.user.id)
-      .single();
+  listMembers: protectedProcedure
+    .input(orgIdSchema)
+    .query(
+      async ({
+        ctx,
+        input,
+      }): Promise<Pick<OrgMember, 'id' | 'user_id' | 'role' | 'invited_by' | 'joined_at'>[]> => {
+        const { data: membership, error: memberError } = await ctx.supabase
+          .from('org_members')
+          .select('role')
+          .eq('org_id', input.orgId)
+          .eq('user_id', ctx.user.id)
+          .single();
 
-    if (memberError || !membership) {
-      throw new TRPCError({ code: 'FORBIDDEN', message: 'Not a member of this organization.' });
-    }
+        if (memberError || !membership) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Not a member of this organization.' });
+        }
 
-    const { data, error } = await ctx.supabase
-      .from('org_members')
-      .select('id, user_id, role, invited_by, joined_at')
-      .eq('org_id', input.orgId)
-      .order('joined_at', { ascending: true });
+        const { data, error } = await ctx.supabase
+          .from('org_members')
+          .select('id, user_id, role, invited_by, joined_at')
+          .eq('org_id', input.orgId)
+          .order('joined_at', { ascending: true });
 
-    if (error) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message });
-    }
+        if (error) {
+          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message });
+        }
 
-    return (data ?? []) as Pick<OrgMember, 'id' | 'user_id' | 'role' | 'invited_by' | 'joined_at'>[];
-  }),
+        return (data ?? []) as Pick<
+          OrgMember,
+          'id' | 'user_id' | 'role' | 'invited_by' | 'joined_at'
+        >[];
+      },
+    ),
 
   invite: protectedProcedure.input(inviteSchema).mutation(async ({ ctx, input }) => {
     await assertAdminOrOwner(ctx.supabase, ctx.user.id, input.orgId);
@@ -101,7 +117,10 @@ export const teamsRouter = router({
       .single();
 
     if (existing) {
-      throw new TRPCError({ code: 'CONFLICT', message: 'User is already a member of this organization.' });
+      throw new TRPCError({
+        code: 'CONFLICT',
+        message: 'User is already a member of this organization.',
+      });
     }
 
     const { error } = await ctx.supabase.from('org_members').insert({
@@ -115,7 +134,11 @@ export const teamsRouter = router({
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message });
     }
 
-    return { success: true, status: 'added' as const, message: `${input.email} added to the organization.` };
+    return {
+      success: true,
+      status: 'added' as const,
+      message: `${input.email} added to the organization.`,
+    };
   }),
 
   removeMember: protectedProcedure.input(removeMemberSchema).mutation(async ({ ctx, input }) => {
@@ -159,7 +182,10 @@ export const teamsRouter = router({
 
     // Only owner can assign admin role
     if (input.role === 'admin' && callerRole !== 'owner') {
-      throw new TRPCError({ code: 'FORBIDDEN', message: 'Only the owner can assign the admin role.' });
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'Only the owner can assign the admin role.',
+      });
     }
 
     const { error } = await ctx.supabase

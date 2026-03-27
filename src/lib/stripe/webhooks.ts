@@ -1,11 +1,14 @@
-import type Stripe from 'stripe';
 import { createAdminClient as _createAdminClient } from '@/lib/supabase/admin';
+import type Stripe from 'stripe';
 import { getPlanByPriceId } from './plans';
 
 // Cast to untyped client — Supabase 2.100 type inference for upsert/update
 // requires generated types from CLI; this module uses raw supabase-js for stripe webhooks
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createAdminClient = () => _createAdminClient() as unknown as ReturnType<typeof import('@supabase/supabase-js').createClient<any>>;
+const createAdminClient = () =>
+  _createAdminClient() as unknown as ReturnType<
+    // biome-ignore lint/suspicious/noExplicitAny: Supabase typed client requires generated types from CLI
+    typeof import('@supabase/supabase-js').createClient<any>
+  >;
 
 type WebhookHandlerResult = { success: true } | { success: false; error: string };
 
@@ -16,11 +19,9 @@ type WebhookHandlerResult = { success: true } | { success: false; error: string 
 export async function handleCheckoutSessionCompleted(
   session: Stripe.Checkout.Session,
 ): Promise<WebhookHandlerResult> {
-  const orgId = session.metadata?.['org_id'];
+  const orgId = session.metadata?.org_id;
   const subscriptionId =
-    typeof session.subscription === 'string'
-      ? session.subscription
-      : session.subscription?.id;
+    typeof session.subscription === 'string' ? session.subscription : session.subscription?.id;
 
   if (!orgId || !subscriptionId) {
     return { success: false, error: 'Missing org_id metadata or subscription id' };
@@ -109,7 +110,13 @@ export async function handleSubscriptionUpdated(
     .from('subscriptions')
     .update({
       stripe_price_id: priceId ?? null,
-      status: subscription.status as 'active' | 'inactive' | 'canceled' | 'past_due' | 'trialing' | 'unpaid',
+      status: subscription.status as
+        | 'active'
+        | 'inactive'
+        | 'canceled'
+        | 'past_due'
+        | 'trialing'
+        | 'unpaid',
       current_period_end: currentPeriodEnd,
       cancel_at_period_end: subscription.cancel_at_period_end,
     })
@@ -122,10 +129,7 @@ export async function handleSubscriptionUpdated(
   // Update org plan
   if (plan) {
     const orgPlan = plan.id === 'team' ? 'enterprise' : plan.id === 'pro' ? 'pro' : 'free';
-    await supabase
-      .from('organizations')
-      .update({ plan: orgPlan })
-      .eq('id', existing.org_id);
+    await supabase.from('organizations').update({ plan: orgPlan }).eq('id', existing.org_id);
   }
 
   return { success: true };

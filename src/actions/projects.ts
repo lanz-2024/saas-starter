@@ -1,9 +1,9 @@
 'use server';
 
-import { redirect } from 'next/navigation';
 import { createServerClient } from '@supabase/ssr';
 import type { CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
 const createProjectSchema = z.object({
@@ -17,13 +17,14 @@ const DEMO_ORG_ID = '00000000-0000-0000-0000-000000000001';
 export async function createProject(formData: FormData) {
   const cookieStore = await cookies();
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) =>
-          cs.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
+        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) => {
+          for (const { name, value, options } of cs) cookieStore.set(name, value, options);
+        },
       },
     },
   );
@@ -66,13 +67,14 @@ export async function createProject(formData: FormData) {
 export async function deleteProject(id: string) {
   const cookieStore = await cookies();
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) =>
-          cs.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
+        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) => {
+          for (const { name, value, options } of cs) cookieStore.set(name, value, options);
+        },
       },
     },
   );
@@ -83,11 +85,7 @@ export async function deleteProject(id: string) {
 
   if (!user) redirect('/sign-in');
 
-  const { error } = await supabase
-    .from('projects')
-    .delete()
-    .eq('id', id)
-    .eq('created_by', user.id);
+  const { error } = await supabase.from('projects').delete().eq('id', id).eq('created_by', user.id);
 
   if (error) {
     throw new Error(error.message);

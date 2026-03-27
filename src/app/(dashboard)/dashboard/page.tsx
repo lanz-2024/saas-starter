@@ -1,23 +1,24 @@
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import { createServerClient } from '@supabase/ssr';
 import type { CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import { FolderKanban, Users, CreditCard, Plus } from 'lucide-react';
+import { CreditCard, FolderKanban, Plus, Users } from 'lucide-react';
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = { title: 'Dashboard' };
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) =>
-          cs.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
+        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) => {
+          for (const { name, value, options } of cs) cookieStore.set(name, value, options);
+        },
       },
     },
   );
@@ -36,7 +37,11 @@ export default async function DashboardPage() {
     .limit(1)
     .single();
 
-  const org = membership?.organizations as unknown as { id: string; name: string; plan: string } | null;
+  const org = membership?.organizations as unknown as {
+    id: string;
+    name: string;
+    plan: string;
+  } | null;
 
   const { count: projectCount } = await supabase
     .from('projects')
@@ -56,9 +61,24 @@ export default async function DashboardPage() {
     .limit(5);
 
   const stats = [
-    { label: 'Projects', value: projectCount ?? 0, icon: FolderKanban, href: '/dashboard/projects' as import('next').Route },
-    { label: 'Team members', value: memberCount ?? 0, icon: Users, href: '/dashboard/team' as import('next').Route },
-    { label: 'Current plan', value: org?.plan ?? 'free', icon: CreditCard, href: '/dashboard/settings' as import('next').Route },
+    {
+      label: 'Projects',
+      value: projectCount ?? 0,
+      icon: FolderKanban,
+      href: '/dashboard/projects' as import('next').Route,
+    },
+    {
+      label: 'Team members',
+      value: memberCount ?? 0,
+      icon: Users,
+      href: '/dashboard/team' as import('next').Route,
+    },
+    {
+      label: 'Current plan',
+      value: org?.plan ?? 'free',
+      icon: CreditCard,
+      href: '/dashboard/settings' as import('next').Route,
+    },
   ];
 
   return (
@@ -131,7 +151,9 @@ export default async function DashboardPage() {
           <div className="rounded-lg border-2 border-dashed border-gray-200 bg-white p-10 text-center">
             <FolderKanban className="mx-auto h-10 w-10 text-gray-300 mb-3" />
             <p className="text-sm font-medium text-gray-900">No projects yet</p>
-            <p className="text-sm text-gray-500 mb-4">Get started by creating your first project.</p>
+            <p className="text-sm text-gray-500 mb-4">
+              Get started by creating your first project.
+            </p>
             <Link
               href="/dashboard/projects/new"
               className="inline-flex items-center gap-2 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"

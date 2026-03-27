@@ -1,10 +1,10 @@
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
 import { createServerClient } from '@supabase/ssr';
 import type { CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { CreditCard, User } from 'lucide-react';
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = { title: 'Settings' };
 
@@ -17,13 +17,14 @@ const planLabels: Record<string, { label: string; color: string }> = {
 export default async function SettingsPage() {
   const cookieStore = await cookies();
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) =>
-          cs.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
+        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) => {
+          for (const { name, value, options } of cs) cookieStore.set(name, value, options);
+        },
       },
     },
   );
@@ -42,8 +43,9 @@ export default async function SettingsPage() {
     .single();
 
   const org = membership?.organizations as unknown as { plan: string; name: string } | null;
-  const plan = planLabels[org?.plan ?? 'free'] ?? planLabels['free']!;
-  const displayName = user.user_metadata?.['full_name'] as string | undefined;
+  const plan = planLabels[org?.plan ?? 'free'] ??
+    planLabels.free ?? { label: 'Free', color: 'bg-gray-100 text-gray-700' };
+  const displayName = user.user_metadata?.full_name as string | undefined;
 
   return (
     <div className="max-w-2xl space-y-8">
@@ -69,8 +71,13 @@ export default async function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email address</label>
-            <p className="mt-1 text-sm text-gray-500 bg-gray-50 rounded-md border border-gray-200 px-3 py-2">
+            <label htmlFor="email-display" className="block text-sm font-medium text-gray-700">
+              Email address
+            </label>
+            <p
+              id="email-display"
+              className="mt-1 text-sm text-gray-500 bg-gray-50 rounded-md border border-gray-200 px-3 py-2"
+            >
               {user.email}
             </p>
             <p className="mt-1 text-xs text-gray-400">Email cannot be changed from this page.</p>
@@ -94,7 +101,9 @@ export default async function SettingsPage() {
           <div>
             <p className="text-sm text-gray-600">Current plan</p>
             <div className="mt-1 flex items-center gap-2">
-              <span className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${plan.color}`}>
+              <span
+                className={`inline-flex rounded-full px-3 py-1 text-sm font-semibold ${plan.color}`}
+              >
                 {plan.label}
               </span>
             </div>

@@ -20,8 +20,8 @@ export async function middleware(request: NextRequest) {
     request,
   });
 
-  const url = process.env['NEXT_PUBLIC_SUPABASE_URL'];
-  const key = process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'];
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !key) {
     return response;
@@ -33,11 +33,11 @@ export async function middleware(request: NextRequest) {
         return request.cookies.getAll();
       },
       setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+        for (const { name, value } of cookiesToSet) request.cookies.set(name, value);
         response = NextResponse.next({ request });
-        cookiesToSet.forEach(({ name, value, options }) => {
+        for (const { name, value, options } of cookiesToSet) {
           response.cookies.set(name, value, options);
-        });
+        }
       },
     },
   });

@@ -1,10 +1,10 @@
 'use client';
 
-import Link from 'next/link';
-import { Plus, FolderKanban } from 'lucide-react';
-import { trpc } from '@/lib/trpc/client';
 import { ProjectCard } from '@/components/dashboard/ProjectCard';
+import { trpc } from '@/lib/trpc/client';
 import type { Project } from '@/types/database';
+import { FolderKanban, Plus } from 'lucide-react';
+import Link from 'next/link';
 
 // Demo org ID — in production this comes from the user's active org context
 const DEMO_ORG_ID = '00000000-0000-0000-0000-000000000001';
@@ -16,8 +16,8 @@ function ProjectsGrid({ orgId }: { orgId: string }) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-48 rounded-lg border border-gray-200 bg-white animate-pulse" />
+        {Array.from({ length: 6 }, (_, i) => `skeleton-${i}`).map((id) => (
+          <div key={id} className="h-48 rounded-lg border border-gray-200 bg-white animate-pulse" />
         ))}
       </div>
     );
