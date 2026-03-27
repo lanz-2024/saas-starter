@@ -1,6 +1,6 @@
 import type { NextConfig } from 'next';
 
-const supabaseUrl = process.env['NEXT_PUBLIC_SUPABASE_URL'] ?? '';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
 const supabaseHostname = supabaseUrl ? new URL(supabaseUrl).hostname : '';
 
 const nextConfig: NextConfig = {
@@ -47,8 +47,7 @@ const nextConfig: NextConfig = {
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: blob: https://avatars.githubusercontent.com https://lh3.googleusercontent.com" +
-                (supabaseHostname ? ` https://${supabaseHostname}` : ''),
+              `img-src 'self' data: blob: https://avatars.githubusercontent.com https://lh3.googleusercontent.com${supabaseHostname ? ` https://${supabaseHostname}` : ''}`,
               "font-src 'self'",
               `connect-src 'self' https://*.supabase.co wss://*.supabase.co${supabaseHostname ? ` https://${supabaseHostname} wss://${supabaseHostname}` : ''}`,
               "frame-ancestors 'none'",

@@ -1,14 +1,14 @@
 'use client';
 
+import { trpc } from '@/lib/trpc/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { httpBatchLink } from '@trpc/client';
 import { useState } from 'react';
-import { trpc } from '@/lib/trpc/client';
 
 function getBaseUrl() {
   if (typeof window !== 'undefined') return '';
-  if (process.env['VERCEL_URL']) return `https://${process.env['VERCEL_URL']}`;
-  return `http://localhost:${process.env['PORT'] ?? 3000}`;
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return `http://localhost:${process.env.PORT ?? 3000}`;
 }
 
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
@@ -22,8 +22,7 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
               // Don't retry on auth errors
               if (
                 error instanceof Error &&
-                (error.message.includes('UNAUTHORIZED') ||
-                  error.message.includes('FORBIDDEN'))
+                (error.message.includes('UNAUTHORIZED') || error.message.includes('FORBIDDEN'))
               ) {
                 return false;
               }

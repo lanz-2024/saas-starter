@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/database';
+import { createClient } from '@supabase/supabase-js';
 
 /**
  * Service-role Supabase client — bypasses RLS.
@@ -7,8 +7,8 @@ import type { Database } from '@/types/database';
  * NEVER expose the service role key to the client.
  */
 export function createAdminClient() {
-  const url = process.env['NEXT_PUBLIC_SUPABASE_URL'];
-  const serviceKey = process.env['SUPABASE_SERVICE_ROLE_KEY'];
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !serviceKey) {
     throw new Error(

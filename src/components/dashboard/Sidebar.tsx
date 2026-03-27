@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
+import { FolderKanban, LayoutDashboard, Menu, Settings, Users, X } from 'lucide-react';
 import type { Route } from 'next';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FolderKanban, Users, Settings, X, Menu } from 'lucide-react';
+import { useState } from 'react';
 
 const navItems: { label: string; href: Route; icon: React.ElementType }[] = [
   { label: 'Dashboard', href: '/dashboard' as Route, icon: LayoutDashboard },
@@ -13,7 +13,11 @@ const navItems: { label: string; href: Route; icon: React.ElementType }[] = [
   { label: 'Settings', href: '/dashboard/settings' as Route, icon: Settings },
 ];
 
-function NavLink({ href, label, icon: Icon }: { href: Route; label: string; icon: React.ElementType }) {
+function NavLink({
+  href,
+  label,
+  icon: Icon,
+}: { href: Route; label: string; icon: React.ElementType }) {
   const pathname = usePathname();
   const isActive = pathname === href || (href !== '/dashboard' && pathname.startsWith(href));
 
@@ -73,6 +77,10 @@ export function Sidebar() {
           <div
             className="absolute inset-0 bg-gray-900/50"
             onClick={() => setMobileOpen(false)}
+            onKeyDown={(e) => e.key === 'Escape' && setMobileOpen(false)}
+            role="button"
+            tabIndex={0}
+            aria-label="Close sidebar"
           />
           <div className="relative flex h-full w-64 flex-col bg-white shadow-xl">
             <div className="absolute right-3 top-3">
