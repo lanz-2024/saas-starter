@@ -5,7 +5,7 @@
  * tRPC router — no database required.
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 type Role = 'owner' | 'admin' | 'member' | 'viewer';
 

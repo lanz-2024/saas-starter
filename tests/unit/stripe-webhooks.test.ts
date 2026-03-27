@@ -5,9 +5,9 @@
  * without making real Stripe API calls.
  */
 
-import { describe, it, expect } from 'vitest';
 import { PLANS, PLANS_LIST, getPlan, getPlanByPriceId } from '@/lib/stripe/plans';
 import type { PlanId } from '@/lib/stripe/plans';
+import { describe, expect, it } from 'vitest';
 
 // Subscription status values used by Stripe
 type StripeSubscriptionStatus =

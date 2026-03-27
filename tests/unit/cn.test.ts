@@ -4,8 +4,8 @@
  * cn = clsx + tailwind-merge: merges class strings and resolves Tailwind conflicts.
  */
 
-import { describe, it, expect } from 'vitest';
 import { cn } from '@/utils/cn';
+import { describe, expect, it } from 'vitest';
 
 describe('cn — basic merging', () => {
   it('returns a single class unchanged', () => {
