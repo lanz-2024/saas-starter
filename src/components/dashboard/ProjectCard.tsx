@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import { Users, Calendar } from 'lucide-react';
 import type { Project } from '@/types/database';
+import { Calendar, Users } from 'lucide-react';
+import Link from 'next/link';
 
 interface ProjectCardProps {
   project: Project;

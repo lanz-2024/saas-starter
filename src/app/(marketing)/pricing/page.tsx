@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { PLANS_LIST } from '@/lib/stripe/plans';
 import { PricingCard } from '@/components/ui/PricingCard';
+import { PLANS_LIST } from '@/lib/stripe/plans';
+import Link from 'next/link';
+import { useState } from 'react';
 
 export default function PricingPage() {
   const [annual, setAnnual] = useState(false);
@@ -78,7 +78,9 @@ export default function PricingPage() {
                 key={plan.id}
                 name={plan.name}
                 price={monthlyPrice}
-                priceSubtext={plan.priceInCents === 0 ? 'forever' : annual ? '/mo billed annually' : '/month'}
+                priceSubtext={
+                  plan.priceInCents === 0 ? 'forever' : annual ? '/mo billed annually' : '/month'
+                }
                 features={plan.features}
                 isRecommended={plan.highlighted}
                 ctaText={plan.priceInCents === 0 ? 'Get started free' : `Start ${plan.name}`}

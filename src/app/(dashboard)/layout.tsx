@@ -1,20 +1,23 @@
-import { redirect } from 'next/navigation';
+import { signOut } from '@/actions/auth';
+import { Sidebar } from '@/components/dashboard/Sidebar';
 import { createServerClient } from '@supabase/ssr';
 import type { CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { Sidebar } from '@/components/dashboard/Sidebar';
-import { signOut } from '@/actions/auth';
+import { redirect } from 'next/navigation';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) =>
-          cs.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
+        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) => {
+          for (const { name, value, options } of cs) {
+            cookieStore.set(name, value, options);
+          }
+        },
       },
     },
   );
@@ -27,10 +30,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     redirect('/sign-in');
   }
 
-  const displayName =
-    user.user_metadata?.['full_name'] ?? user.email?.split('@')[0] ?? 'User';
+  const displayName = user.user_metadata?.full_name ?? user.email?.split('@')[0] ?? 'User';
   const avatarInitial = displayName.charAt(0).toUpperCase();
-  const avatarUrl = user.user_metadata?.['avatar_url'] as string | undefined;
+  const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
 
   return (
     <div className="min-h-full">

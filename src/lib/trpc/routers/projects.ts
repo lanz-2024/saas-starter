@@ -1,8 +1,8 @@
+import type { Project } from '@/types/database';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-import { protectedProcedure, router } from '../trpc';
 import type { TRPCContext } from '../context';
-import type { Project } from '@/types/database';
+import { protectedProcedure, router } from '../trpc';
 
 const createProjectSchema = z.object({
   orgId: z.string().uuid(),
@@ -44,21 +44,23 @@ async function assertOrgMembership(
 }
 
 export const projectsRouter = router({
-  list: protectedProcedure.input(listProjectsSchema).query(async ({ ctx, input }): Promise<Project[]> => {
-    await assertOrgMembership(ctx.supabase, ctx.user.id, input.orgId);
+  list: protectedProcedure
+    .input(listProjectsSchema)
+    .query(async ({ ctx, input }): Promise<Project[]> => {
+      await assertOrgMembership(ctx.supabase, ctx.user.id, input.orgId);
 
-    const { data, error } = await ctx.supabase
-      .from('projects')
-      .select('*')
-      .eq('org_id', input.orgId)
-      .order('created_at', { ascending: false });
+      const { data, error } = await ctx.supabase
+        .from('projects')
+        .select('*')
+        .eq('org_id', input.orgId)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message });
-    }
+      if (error) {
+        throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message });
+      }
 
-    return (data ?? []) as Project[];
-  }),
+      return (data ?? []) as Project[];
+    }),
 
   getById: protectedProcedure.input(projectIdSchema).query(async ({ ctx, input }) => {
     const { data, error } = await ctx.supabase
@@ -81,10 +83,9 @@ export const projectsRouter = router({
     await assertOrgMembership(ctx.supabase, ctx.user.id, input.orgId);
 
     // Check plan project limit via DB function
-    const { data: withinLimit, error: limitError } = await ctx.supabase.rpc(
-      'check_project_limit',
-      { p_org_id: input.orgId },
-    );
+    const { data: withinLimit, error: limitError } = await ctx.supabase.rpc('check_project_limit', {
+      p_org_id: input.orgId,
+    });
 
     if (limitError) {
       throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: limitError.message });
@@ -93,8 +94,7 @@ export const projectsRouter = router({
     if (!withinLimit) {
       throw new TRPCError({
         code: 'FORBIDDEN',
-        message:
-          'Project limit reached for your current plan. Upgrade to create more projects.',
+        message: 'Project limit reached for your current plan. Upgrade to create more projects.',
       });
     }
 
@@ -111,7 +111,10 @@ export const projectsRouter = router({
       .single();
 
     if (error || !data) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error?.message ?? 'Failed to create project' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: error?.message ?? 'Failed to create project',
+      });
     }
 
     return data;
@@ -134,13 +137,13 @@ export const projectsRouter = router({
     const role = await assertOrgMembership(ctx.supabase, ctx.user.id, existing.org_id);
 
     // Only creator or admin/owner can update
-    const canUpdate =
-      existing.created_by === ctx.user.id ||
-      role === 'owner' ||
-      role === 'admin';
+    const canUpdate = existing.created_by === ctx.user.id || role === 'owner' || role === 'admin';
 
     if (!canUpdate) {
-      throw new TRPCError({ code: 'FORBIDDEN', message: 'Only the project creator or an admin can update this project.' });
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'Only the project creator or an admin can update this project.',
+      });
     }
 
     const { data, error } = await ctx.supabase
@@ -151,7 +154,10 @@ export const projectsRouter = router({
       .single();
 
     if (error || !data) {
-      throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error?.message ?? 'Failed to update project' });
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: error?.message ?? 'Failed to update project',
+      });
     }
 
     return data;
@@ -170,13 +176,13 @@ export const projectsRouter = router({
 
     const role = await assertOrgMembership(ctx.supabase, ctx.user.id, existing.org_id);
 
-    const canDelete =
-      existing.created_by === ctx.user.id ||
-      role === 'owner' ||
-      role === 'admin';
+    const canDelete = existing.created_by === ctx.user.id || role === 'owner' || role === 'admin';
 
     if (!canDelete) {
-      throw new TRPCError({ code: 'FORBIDDEN', message: 'Only the project creator or an admin can delete this project.' });
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'Only the project creator or an admin can delete this project.',
+      });
     }
 
     const { error } = await ctx.supabase.from('projects').delete().eq('id', input.id);

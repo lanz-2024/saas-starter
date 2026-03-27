@@ -26,12 +26,7 @@ export const PLANS: Record<PlanId, Plan> = {
     priceId: null,
     maxProjects: 3,
     maxMembers: 1,
-    features: [
-      'Up to 3 projects',
-      'Solo workspace',
-      'Community support',
-      'Basic analytics',
-    ],
+    features: ['Up to 3 projects', 'Solo workspace', 'Community support', 'Basic analytics'],
     highlighted: false,
   },
   pro: {
@@ -39,7 +34,7 @@ export const PLANS: Record<PlanId, Plan> = {
     name: 'Pro',
     priceInCents: 2900,
     price: '$29',
-    priceId: process.env['STRIPE_PRO_PRICE_ID'] ?? 'price_pro_placeholder',
+    priceId: process.env.STRIPE_PRO_PRICE_ID ?? 'price_pro_placeholder',
     maxProjects: null,
     maxMembers: null,
     features: [
@@ -57,7 +52,7 @@ export const PLANS: Record<PlanId, Plan> = {
     name: 'Team',
     priceInCents: 7900,
     price: '$79',
-    priceId: process.env['STRIPE_TEAM_PRICE_ID'] ?? 'price_team_placeholder',
+    priceId: process.env.STRIPE_TEAM_PRICE_ID ?? 'price_team_placeholder',
     maxProjects: null,
     maxMembers: null,
     features: [

@@ -1,10 +1,10 @@
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import { createServerClient } from '@supabase/ssr';
 import type { CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { ArrowLeft, Calendar, Clock, User } from 'lucide-react';
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -26,13 +26,16 @@ export default async function ProjectDetailPage({ params }: Props) {
 
   const cookieStore = await cookies();
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? '',
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) =>
-          cs.forEach(({ name, value, options }) => cookieStore.set(name, value, options)),
+        setAll: (cs: { name: string; value: string; options: CookieOptions }[]) => {
+          for (const { name, value, options } of cs) {
+            cookieStore.set(name, value, options);
+          }
+        },
       },
     },
   );
@@ -70,9 +73,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             {project.status}
           </span>
         </div>
-        {project.description && (
-          <p className="mt-3 text-gray-600">{project.description}</p>
-        )}
+        {project.description && <p className="mt-3 text-gray-600">{project.description}</p>}
       </div>
 
       {/* Meta */}
@@ -99,7 +100,9 @@ export default async function ProjectDetailPage({ params }: Props) {
           <User className="h-5 w-5 text-gray-400" />
           <div>
             <p className="text-xs text-gray-500">Created by</p>
-            <p className="text-sm font-medium text-gray-900 truncate">{project.created_by.slice(0, 8)}…</p>
+            <p className="text-sm font-medium text-gray-900 truncate">
+              {project.created_by.slice(0, 8)}…
+            </p>
           </div>
         </div>
       </div>

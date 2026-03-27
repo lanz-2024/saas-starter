@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { UserPlus, X, Shield, User as UserIcon, Eye } from 'lucide-react';
 import { trpc } from '@/lib/trpc/client';
+import { Eye, Shield, User as UserIcon, UserPlus, X } from 'lucide-react';
+import { useState } from 'react';
 
 const DEMO_ORG_ID = '00000000-0000-0000-0000-000000000001';
 
@@ -100,8 +100,11 @@ export default function TeamPage() {
 
       {isLoading ? (
         <div className="space-y-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-16 rounded-lg border border-gray-200 bg-white animate-pulse" />
+          {Array.from({ length: 3 }, (_, i) => i).map((i) => (
+            <div
+              key={`skeleton-${i}`}
+              className="h-16 rounded-lg border border-gray-200 bg-white animate-pulse"
+            />
           ))}
         </div>
       ) : (

@@ -1,25 +1,25 @@
-import { headers } from 'next/headers';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 import { getStripe } from '@/lib/stripe/client';
 import {
   handleCheckoutSessionCompleted,
-  handleSubscriptionUpdated,
   handleSubscriptionDeleted,
+  handleSubscriptionUpdated,
 } from '@/lib/stripe/webhooks';
+import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
   const headersList = await headers();
   const sig = headersList.get('stripe-signature');
 
-  const webhookSecret = process.env['STRIPE_WEBHOOK_SECRET'];
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!sig || !webhookSecret) {
     return NextResponse.json({ error: 'Missing signature or webhook secret' }, { status: 400 });
   }
 
-  let event;
+  let event: ReturnType<typeof import('stripe').default.prototype.webhooks.constructEvent>;
   try {
     const stripe = getStripe();
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);

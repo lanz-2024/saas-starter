@@ -1,10 +1,11 @@
-import Link from 'next/link';
-import { Shield, Users, CreditCard, ArrowRight, Quote } from 'lucide-react';
+import { ArrowRight, CreditCard, Quote, Shield, Users } from 'lucide-react';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'SaaS Starter — Ship faster',
-  description: 'Production-ready SaaS starter with Supabase Auth, multi-tenancy, Stripe billing, and tRPC.',
+  description:
+    'Production-ready SaaS starter with Supabase Auth, multi-tenancy, Stripe billing, and tRPC.',
 };
 
 const features = [
@@ -59,10 +60,7 @@ export default function MarketingPage() {
           <Link href="/pricing" className="text-sm text-gray-600 hover:text-gray-900">
             Pricing
           </Link>
-          <Link
-            href="/sign-in"
-            className="text-sm font-medium text-gray-700 hover:text-gray-900"
-          >
+          <Link href="/sign-in" className="text-sm font-medium text-gray-700 hover:text-gray-900">
             Sign in
           </Link>
           <Link
@@ -77,8 +75,7 @@ export default function MarketingPage() {
       {/* Hero */}
       <section className="mx-auto max-w-4xl px-6 pt-20 pb-24 text-center">
         <h1 className="text-5xl font-extrabold tracking-tight text-gray-900 sm:text-6xl">
-          Build your SaaS.{' '}
-          <span className="text-indigo-600">Not the plumbing.</span>
+          Build your SaaS. <span className="text-indigo-600">Not the plumbing.</span>
         </h1>
         <p className="mt-6 text-xl text-gray-500 max-w-2xl mx-auto">
           Auth, multi-tenancy, Stripe billing, and a type-safe tRPC API — all wired together and
@@ -147,9 +144,15 @@ export default function MarketingPage() {
         <div className="mx-auto max-w-7xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
           <span className="font-semibold text-indigo-600">SaaS Starter</span>
           <div className="flex gap-6">
-            <Link href="/pricing" className="hover:text-gray-900">Pricing</Link>
-            <Link href="/sign-in" className="hover:text-gray-900">Sign in</Link>
-            <Link href="/sign-up" className="hover:text-gray-900">Sign up</Link>
+            <Link href="/pricing" className="hover:text-gray-900">
+              Pricing
+            </Link>
+            <Link href="/sign-in" className="hover:text-gray-900">
+              Sign in
+            </Link>
+            <Link href="/sign-up" className="hover:text-gray-900">
+              Sign up
+            </Link>
           </div>
         </div>
       </footer>
